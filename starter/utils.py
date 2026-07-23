@@ -14,3 +14,13 @@ def find_incorrect_positions(
             if board[i][j] != solution[i][j]:
                 incorrect.append([i, j])
     return incorrect
+
+
+def map_difficulty_to_clues(difficulty: str) -> int:
+    """Map difficulty levels to a default number of puzzle clues."""
+    difficulty_map = {
+        'Easy': 42,
+        'Medium': 33,
+        'Hard': 25,
+    }
+    return difficulty_map.get(difficulty, 33)

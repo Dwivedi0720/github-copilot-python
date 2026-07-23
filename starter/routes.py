@@ -4,7 +4,7 @@ from flask import Flask, jsonify, render_template, request
 import sudoku_logic
 from typing import Any, Dict
 
-from utils import find_incorrect_positions
+from utils import find_incorrect_positions, map_difficulty_to_clues
 
 
 def register_routes(app: Flask, current_state: Dict[str, Any]) -> None:
@@ -16,7 +16,12 @@ def register_routes(app: Flask, current_state: Dict[str, Any]) -> None:
 
     @app.route('/new')
     def new_game() -> Any:
-        clues = int(request.args.get('clues', 35))
+        clues_arg = request.args.get('clues')
+        if clues_arg is not None:
+            clues = int(clues_arg)
+        else:
+            difficulty = request.args.get('difficulty', 'Medium')
+            clues = map_difficulty_to_clues(difficulty)
         puzzle, solution = sudoku_logic.generate_puzzle(clues)
         current_state['puzzle'] = puzzle
         current_state['solution'] = solution
