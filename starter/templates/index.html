@@ -19,7 +19,18 @@
     <button id="hint-btn">Hint</button>
     <button id="check-solution">Check Solution</button>
     <span id="hints-counter">Hints used: 0</span>
+    <span id="timer">00:00</span>
+    <button id="dark-mode-toggle">Toggle Dark Mode</button>
+    <button id="show-leaderboard">Leaderboard</button>
     <span id="message"></span>
+  </div>
+  <div id="leaderboard" class="leaderboard hidden">
+    <h2>Top 10 Leaderboard</h2>
+    <table id="leaderboard-table">
+      <thead><tr><th>Rank</th><th>Name</th><th>Time</th><th>Difficulty</th><th>Hints</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <button id="close-leaderboard">Close</button>
   </div>
   <script src="/static/main.js"></script>
 </body>

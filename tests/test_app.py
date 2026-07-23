@@ -1,5 +1,6 @@
 import json
 import sudoku_logic
+import app as flask_app
 
 
 def test_index_page_loads(client):
@@ -32,16 +33,29 @@ def test_check_solution_returns_incorrect_positions(client):
     assert response.status_code == 200
     puzzle_data = response.get_json()['puzzle']
 
-    # Create an invalid board by changing one cell
+    # Find an editable empty cell in the generated puzzle
+    empty_cell = None
+    for i, row in enumerate(puzzle_data):
+        for j, value in enumerate(row):
+            if value == 0:
+                empty_cell = (i, j)
+                break
+        if empty_cell is not None:
+            break
+
+    assert empty_cell is not None, 'Generated puzzle must contain at least one empty cell'
+    row, col = empty_cell
+
     board = [row.copy() for row in puzzle_data]
-    board[0][0] = 1 if board[0][0] != 1 else 2
+    solution_value = flask_app.CURRENT['solution'][row][col]
+    board[row][col] = 1 if solution_value != 1 else 2
 
     response = client.post('/check', json={'board': board})
     assert response.status_code == 200
     data = response.get_json()
     assert 'incorrect' in data
     assert isinstance(data['incorrect'], list)
-    assert [0, 0] in data['incorrect']
+    assert [row, col] in data['incorrect']
 
 
 def test_generated_puzzle_has_exactly_one_solution():

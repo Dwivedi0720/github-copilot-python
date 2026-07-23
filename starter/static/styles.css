@@ -44,7 +44,8 @@ h1 {
     color: #333;
 }
 
-.sudoku-cell.incorrect {
+.sudoku-cell.incorrect,
+.sudoku-cell.invalid {
     background: #ffcdd2;
 }
 
@@ -101,3 +102,65 @@ button:hover {
     font-size: 16px;
     color: #d32f2f;
 }
+
+/* Responsive sizing: the board will shrink on small screens */
+@media (max-width: 600px) {
+    .sudoku-cell {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+    #sudoku-board {
+        transform: scale(0.9);
+    }
+}
+
+/* Alternate 3x3 block backgrounds (block-0..8) */
+.sudoku-cell.block-0, .sudoku-cell.block-2, .sudoku-cell.block-4, .sudoku-cell.block-6, .sudoku-cell.block-8 {
+    background: #fbfbfb;
+}
+.sudoku-cell.block-1, .sudoku-cell.block-3, .sudoku-cell.block-5, .sudoku-cell.block-7 {
+    background: #f1f8e9;
+}
+
+/* Dark mode */
+body.dark {
+    background: #121212;
+    color: #eee;
+}
+body.dark #sudoku-board {
+    background: #1e1e1e;
+    border-color: #444;
+}
+body.dark .sudoku-cell {
+    background: #222;
+    color: #eee;
+    border-color: #444;
+}
+body.dark .sudoku-cell.prefilled {
+    background: #333;
+}
+body.dark .sudoku-cell.hint {
+    background: #6b5e00;
+    color: #fff;
+}
+
+/* Leaderboard */
+.leaderboard {
+    position: fixed;
+    right: 16px;
+    top: 80px;
+    background: rgba(255,255,255,0.95);
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    max-width: 420px;
+    z-index: 1000;
+}
+.leaderboard.hidden { display: none; }
+.leaderboard h2 { margin: 0 0 8px 0; }
+.leaderboard table { width: 100%; border-collapse: collapse; }
+.leaderboard th, .leaderboard td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #eee; }
+
+/* Controls layout improvements */
+.controls { gap: 8px; }
