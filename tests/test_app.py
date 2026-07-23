@@ -77,3 +77,64 @@ def test_puzzle_validation():
     # This puzzle should have many solutions
     solution_count = sudoku_logic.count_solutions(invalid_puzzle)
     assert solution_count > 1, "Sparse puzzle should have multiple solutions"
+
+
+def test_hint_endpoint(client):
+    """Test that the hint endpoint provides a valid hint."""
+    # Start a new game
+    response = client.get('/new?clues=35')
+    assert response.status_code == 200
+    
+    # Request a hint
+    response = client.post('/hint')
+    assert response.status_code == 200
+    data = response.get_json()
+    
+    # Verify hint response structure
+    assert 'row' in data
+    assert 'col' in data
+    assert 'value' in data
+    assert 'hints_used' in data
+    
+    # Verify hint values are valid
+    assert 0 <= data['row'] < 9
+    assert 0 <= data['col'] < 9
+    assert 1 <= data['value'] <= 9
+    assert data['hints_used'] == 1
+
+
+def test_hint_counter_increments(client):
+    """Test that hint counter increments correctly."""
+    # Start a new game
+    client.get('/new?clues=35')
+    
+    # Request multiple hints
+    for i in range(3):
+        response = client.post('/hint')
+        data = response.get_json()
+        assert data['hints_used'] == i + 1
+
+
+def test_hint_without_game_returns_error(client):
+    """Test that requesting hint without an active game returns error."""
+    response = client.post('/hint')
+    assert response.status_code == 400
+    data = response.get_json()
+    assert 'error' in data
+
+
+def test_hint_resets_on_new_game(client):
+    """Test that hint counter resets when starting a new game."""
+    # Start first game and use hints
+    client.get('/new?clues=35')
+    client.post('/hint')
+    client.post('/hint')
+    
+    # Start new game and verify counter resets
+    response = client.get('/new?clues=35')
+    assert response.status_code == 200
+    
+    # Request one hint on new game - should be hints_used=1
+    response = client.post('/hint')
+    data = response.get_json()
+    assert data['hints_used'] == 1

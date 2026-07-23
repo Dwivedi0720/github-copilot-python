@@ -1,6 +1,7 @@
 // Client-side rendering and interaction for the Flask-backed Sudoku
 const SIZE = 9;
 let puzzle = [];
+let hintCount = 0;
 
 function createBoardElement() {
   const boardDiv = document.getElementById('sudoku-board');
@@ -53,6 +54,8 @@ async function newGame() {
   const data = await res.json();
   renderPuzzle(data.puzzle);
   document.getElementById('message').innerText = '';
+  hintCount = 0;
+  updateHintCounter();
 }
 
 async function checkSolution() {
@@ -97,9 +100,52 @@ async function checkSolution() {
   }
 }
 
+function updateHintCounter() {
+  document.getElementById('hints-counter').innerText = `Hints used: ${hintCount}`;
+}
+
+async function getHint() {
+  const res = await fetch('/hint', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+  });
+  
+  const data = await res.json();
+  const msg = document.getElementById('message');
+  
+  if (data.error) {
+    msg.style.color = '#d32f2f';
+    msg.innerText = data.error;
+    return;
+  }
+  
+  const { row, col, value, hints_used } = data;
+  
+  // Update hint counter
+  hintCount = hints_used;
+  updateHintCounter();
+  
+  // Update the puzzle display
+  const boardDiv = document.getElementById('sudoku-board');
+  const inputs = boardDiv.getElementsByTagName('input');
+  const idx = row * SIZE + col;
+  const inp = inputs[idx];
+  
+  // Fill the cell with the hint value
+  inp.value = value;
+  inp.disabled = true;
+  
+  // Apply hint styling
+  inp.className = 'sudoku-cell hint';
+  
+  // Clear any previous messages
+  msg.innerText = '';
+}
+
 // Wire buttons
 window.addEventListener('load', () => {
   document.getElementById('new-game').addEventListener('click', newGame);
+  document.getElementById('hint-btn').addEventListener('click', getHint);
   document.getElementById('check-solution').addEventListener('click', checkSolution);
   // initialize
   newGame();
