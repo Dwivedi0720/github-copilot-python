@@ -99,11 +99,9 @@ function updateInvalidHighlights(invalidPositions) {
 
   for (let idx = 0; idx < inputs.length; idx++) {
     const input = inputs[idx];
+    input.classList.remove(INVALID_CLASS, 'incorrect');
     if (invalidPositions.has(idx)) {
       input.classList.add(INVALID_CLASS);
-      input.classList.remove('correct');
-    } else {
-      input.classList.remove(INVALID_CLASS);
     }
   }
 }
@@ -256,9 +254,9 @@ async function checkSolution() {
   for (let idx = 0; idx < inputs.length; idx++) {
     const inp = inputs[idx];
     if (inp.disabled) continue;
-    inp.className = 'sudoku-cell';
+    inp.classList.remove('incorrect', INVALID_CLASS);
     if (incorrect.has(idx)) {
-      inp.className = 'sudoku-cell incorrect';
+      inp.classList.add('incorrect');
     }
   }
   if (incorrect.size === 0) {
